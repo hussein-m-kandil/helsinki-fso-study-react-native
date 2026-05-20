@@ -2,8 +2,10 @@ import { View, TextInput, Pressable, StyleSheet } from 'react-native';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
+import useSignIn from '../hooks/useSignIn';
 import theme from '../theme';
 import Text from './Text';
+import { useNavigate } from 'react-router-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -39,16 +41,25 @@ const styles = StyleSheet.create({
 });
 
 const SignIn = () => {
+  const [signIn, { error }] = useSignIn();
+
+  const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: { username: '', password: '' },
+
     validationSchema: yup.object().shape({
       username: yup.string().required('Username is required'),
       password: yup.string().required('Password is required'),
     }),
-    onSubmit: () => {
-      const { username, password } = formik.values;
-      alert(`Hello, ${username}:${password}!`);
-      formik.resetForm();
+
+    onSubmit: async (values) => {
+      try {
+        await signIn(values);
+        navigate('/');
+      } catch (e) {
+        console.log(e);
+      }
     },
   });
 
@@ -57,6 +68,8 @@ const SignIn = () => {
 
   return (
     <View style={styles.container}>
+      {error && <Text style={styles.error}>{error.message}</Text>}
+
       <View>
         <TextInput
           style={[styles.input, usernameError && styles.invalidInput]}
@@ -67,6 +80,7 @@ const SignIn = () => {
         />
         {usernameError && <Text style={styles.error}>{usernameError}</Text>}
       </View>
+
       <View>
         <TextInput
           secureTextEntry
@@ -78,6 +92,7 @@ const SignIn = () => {
         />
         {passwordError && <Text style={styles.error}>{passwordError}</Text>}
       </View>
+
       <Pressable style={styles.button} onPress={formik.handleSubmit}>
         <Text style={styles.buttonText}>Sign in</Text>
       </Pressable>

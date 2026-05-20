@@ -1,7 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 
-import theme from '../theme';
-import Text from './Text';
+import theme from '../../theme';
+import Text from '../Text';
 
 const formatCount = (count) => {
   const K = 1000;

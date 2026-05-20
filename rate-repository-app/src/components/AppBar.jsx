@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'react-router-native';
 import Constants from 'expo-constants';
 
+import useMe from '../hooks/useMe';
 import theme from '../theme';
 import Text from './Text';
 
@@ -26,14 +27,22 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
+  const [me, signOut] = useMe();
+
   return (
     <ScrollView horizontal style={styles.container}>
-      <Link to='/' style={styles.link}>
+      <Link style={styles.link} to='/'>
         <Text style={styles.linkText}>Repositories</Text>
       </Link>
-      <Link to='/signin' style={styles.link}>
-        <Text style={styles.linkText}>Sing in</Text>
-      </Link>
+      {me ? (
+        <Link style={styles.link} onPress={signOut}>
+          <Text style={styles.linkText}>Sign out</Text>
+        </Link>
+      ) : (
+        <Link style={styles.link} to='/signin'>
+          <Text style={styles.linkText}>Sing in</Text>
+        </Link>
+      )}
     </ScrollView>
   );
 };
