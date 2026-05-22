@@ -27,21 +27,36 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
-  const [me, signOut] = useMe();
+  const [{ data }, signOut] = useMe();
+
+  const me = data ? data.me : null;
 
   return (
-    <ScrollView horizontal style={styles.container}>
+    <ScrollView horizontal key={JSON.stringify(me)} style={styles.container}>
       <Link style={styles.link} to='/'>
         <Text style={styles.linkText}>Repositories</Text>
       </Link>
       {me ? (
-        <Link style={styles.link} onPress={signOut}>
-          <Text style={styles.linkText}>Sign out</Text>
-        </Link>
+        <>
+          <Link style={styles.link} to={'/review'}>
+            <Text style={styles.linkText}>Create a review</Text>
+          </Link>
+          <Link style={styles.link} to={'/reviews'}>
+            <Text style={styles.linkText}>My reviews</Text>
+          </Link>
+          <Link style={styles.link} onPress={signOut}>
+            <Text style={styles.linkText}>Sign out</Text>
+          </Link>
+        </>
       ) : (
-        <Link style={styles.link} to='/signin'>
-          <Text style={styles.linkText}>Sing in</Text>
-        </Link>
+        <>
+          <Link style={styles.link} to='/signin'>
+            <Text style={styles.linkText}>Sing in</Text>
+          </Link>
+          <Link style={styles.link} to='/signup'>
+            <Text style={styles.linkText}>Sing up</Text>
+          </Link>
+        </>
       )}
     </ScrollView>
   );

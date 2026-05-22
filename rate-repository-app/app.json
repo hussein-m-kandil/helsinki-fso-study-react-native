@@ -19,6 +19,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5298458d-e989-4ca3-af22-560ca4b137de"
+      }
+    },
+    "owner": "hussein-kandils-organization",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5298458d-e989-4ca3-af22-560ca4b137de"
     }
   }
 }

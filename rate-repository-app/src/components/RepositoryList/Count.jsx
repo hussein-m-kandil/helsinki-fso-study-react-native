@@ -3,20 +3,19 @@ import { View, StyleSheet } from 'react-native';
 import theme from '../../theme';
 import Text from '../Text';
 
-const formatCount = (count) => {
+export const formatCount = (count) => {
   const K = 1000;
   const M = K * K;
   const B = M * K;
-  switch (true) {
-    case count < K:
-      return `${count}`;
-    case count >= K:
-      return `${(count / K).toFixed(1)}K`;
-    case count >= M:
-      return `${(count / M).toFixed(1)}M`;
-    default:
-      return `${(count / B).toFixed(1)}B`;
-  }
+  const round = (num) => num.toFixed(1).replace(/\.0$/, '');
+  let result = round(count);
+  if (result < K) return `${result}`;
+  result = round(count / K);
+  if (result < K) return `${result}K`;
+  result = round(count / M);
+  if (result < K) return `${result}M`;
+  result = round(count / B);
+  return `${result}B`;
 };
 
 const styles = StyleSheet.create({

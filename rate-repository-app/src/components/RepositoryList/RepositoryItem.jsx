@@ -1,4 +1,5 @@
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, Pressable, StyleSheet } from 'react-native';
+import { openURL } from 'expo-linking';
 
 import theme from '../../theme';
 import Count from './Count';
@@ -48,11 +49,25 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: theme.colors.secondary,
   },
+  url: {
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.contrast,
+    fontSize: 20,
+    fontWeight: 700,
+    textAlign: 'center',
+    borderRadius: 10,
+    padding: 15,
+  },
 });
 
-const RepositoryItem = ({ item }) => {
+const RepositoryItem = ({ item, detailed }) => {
   return (
-    <View key={item.id} style={styles.container}>
+    <View
+      key={item.id}
+      style={styles.container}
+      testID={`repository_${item.id}`}
+      aria-label='Repository'
+    >
       <View style={styles.headerContainer}>
         <Image style={styles.avatar} source={{ uri: item.ownerAvatarUrl }} />
         <View style={styles.subheaderContainer}>
@@ -63,12 +78,19 @@ const RepositoryItem = ({ item }) => {
           </View>
         </View>
       </View>
+
       <View style={styles.countsContainer}>
         <Count count={item.stargazersCount} label={'Stars'} />
         <Count count={item.forksCount} label={'Forks'} />
         <Count count={item.reviewCount} label={'Reviews'} />
         <Count count={item.ratingAverage} label={'Rating'} />
       </View>
+
+      {detailed && (
+        <Pressable onPress={() => openURL(item.url)}>
+          <Text style={styles.url}>Open in GitHub</Text>
+        </Pressable>
+      )}
     </View>
   );
 };

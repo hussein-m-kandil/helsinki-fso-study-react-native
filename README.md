@@ -1,7 +1,19 @@
-# University of Helsinki's Full Stack Open Study ([React Native](https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-react-native/))
+# University of Helsinki's Full Stack Open Study (React Native)
 
-Exercises for the _React Native_ part of the University of Helsinki's _Full Stack Open_ course.
+Exercises for the [_React Native part_](https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-react-native/) of the University of Helsinki's [_Full Stack Open_](https://fullstackopen.com/en/) course.
 
-## About this part of the course
+## Rate Repository App
 
-> During this part, we will be developing an application for rating [GitHub](https://github.com) repositories. Our application will have features such as, sorting and filtering reviewed repositories, registering a user, logging in and creating a review for a repository. The backend for the application will be provided for us so that we can solely focus on the React Native development.
+During this course a mobile application created for rating GitHub repositories. Users can browse GitHub-style repositories, view individual repository details and reviews, and create new reviews when signed in. The app is build with React Native and Expo, and it uses a GraphQl API as its backend.
+
+### Try the App on Your Phone
+
+You can try the app on your phone by scanning the following QR code with Expo Go:
+
+![A QR code to scan within Expo Go application](./rate-repository-app/qrc.png)
+
+### Try the Web Version of the App
+
+You can try the app on your browser by following this URL:
+
+[https://helsinki-fso-rate-repo-app--hussein-kandil.expo.app/](https://helsinki-fso-rate-repo-app--hussein-kandil.expo.app/)

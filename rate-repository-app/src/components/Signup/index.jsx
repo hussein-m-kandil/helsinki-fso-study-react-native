@@ -2,10 +2,9 @@ import { View, TextInput, Pressable, StyleSheet } from 'react-native';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-import useSignIn from '../hooks/useSignIn';
-import theme from '../theme';
-import Text from './Text';
-import { useNavigate } from 'react-router-native';
+import useSignUp from '../../hooks/useSignUp';
+import theme from '../../theme';
+import Text from '../Text';
 
 const styles = StyleSheet.create({
   container: {
@@ -40,31 +39,28 @@ const styles = StyleSheet.create({
   },
 });
 
-const SignIn = () => {
-  const [signIn, { error }] = useSignIn();
+const initialValues = { username: '', password: '', confirm: '' };
+const validationSchema = yup.object().shape({
+  username: yup.string().required('Username is required'),
+  password: yup.string().required('Password is required'),
+  confirm: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Password confirmation does not match')
+    .required('Password confirmation is required'),
+});
 
-  const navigate = useNavigate();
+const SignUp = () => {
+  const [signUp, { error }] = useSignUp();
 
-  const formik = useFormik({
-    initialValues: { username: '', password: '' },
+  const onSubmit = ({ username, password }) => {
+    signUp({ username, password });
+  };
 
-    validationSchema: yup.object().shape({
-      username: yup.string().required('Username is required'),
-      password: yup.string().required('Password is required'),
-    }),
-
-    onSubmit: async (values) => {
-      try {
-        await signIn(values);
-        navigate('/');
-      } catch (e) {
-        console.log(e);
-      }
-    },
-  });
+  const formik = useFormik({ initialValues, validationSchema, onSubmit });
 
   const usernameError = formik.touched.username && formik.errors.username;
   const passwordError = formik.touched.password && formik.errors.password;
+  const confirmError = formik.touched.confirm && formik.errors.confirm;
 
   return (
     <View style={styles.container}>
@@ -93,11 +89,23 @@ const SignIn = () => {
         {passwordError && <Text style={styles.error}>{passwordError}</Text>}
       </View>
 
+      <View>
+        <TextInput
+          secureTextEntry
+          style={[styles.input, confirmError && styles.invalidInput]}
+          placeholder='Password Confirmation'
+          value={formik.values.confirm}
+          onChangeText={formik.handleChange('confirm')}
+          onBlur={formik.handleBlur('confirm')}
+        />
+        {confirmError && <Text style={styles.error}>{confirmError}</Text>}
+      </View>
+
       <Pressable style={styles.button} onPress={formik.handleSubmit}>
-        <Text style={styles.buttonText}>Sign in</Text>
+        <Text style={styles.buttonText}>Sign up</Text>
       </Pressable>
     </View>
   );
 };
 
-export default SignIn;
+export default SignUp;

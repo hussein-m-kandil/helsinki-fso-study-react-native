@@ -1,49 +1,64 @@
-import { FlatList, View, StyleSheet } from 'react-native';
+import { useDebounce } from 'use-debounce';
+import { useState } from 'react';
 
+import RepositoryListContainer from './RepositoryListContainer';
 import useRepositories from '../../hooks/useRepositories';
-import RepositoryItem from './RepositoryItem';
-import theme from '../../theme';
-import Text from '../Text';
+import Loader from '../Loader';
 
-const styles = StyleSheet.create({
-  separator: {
-    height: 10,
+const SORT_OPTIONS = [
+  {
+    label: 'Latest repositories',
+    variables: { orderBy: 'CREATED_AT', orderDirection: 'DESC' },
   },
-  message: {
-    color: theme.colors.accent,
-    textAlign: 'center',
-    fontSize: 20,
-    padding: 20,
+  {
+    label: 'Highest rated repositories',
+    variables: { orderBy: 'RATING_AVERAGE', orderDirection: 'DESC' },
   },
-});
-
-const ItemSeparator = () => <View style={styles.separator} />;
+  {
+    label: 'Lowest rated repositories',
+    variables: { orderBy: 'RATING_AVERAGE', orderDirection: 'ASC' },
+  },
+];
 
 const RepositoryList = () => {
-  const { repositories, loading, error } = useRepositories();
+  const [selectedSortOption, setSelectedSortOption] = useState(0);
+  const [searchKeyword, setSearchKeyword] = useState();
 
-  if (loading) {
-    return <Text style={styles.message}>Loading...</Text>;
-  }
+  const [debouncedSearchKeyword] = useDebounce(searchKeyword, 500);
 
-  if (error) {
-    return (
-      <Text style={[styles.message, { color: theme.colors.danger }]}>
-        {error.message}
-      </Text>
-    );
-  }
+  const { repositories, loading, error, fetchMore } = useRepositories({
+    variables: {
+      ...SORT_OPTIONS[selectedSortOption].variables,
+      searchKeyword: debouncedSearchKeyword,
+      first: 5,
+    },
+  });
 
-  const repositoryNodes = repositories
-    ? repositories.edges.map((edge) => edge.node)
-    : [];
+  const sort = (index) => {
+    if (index >= 0 && index < SORT_OPTIONS.length) {
+      setSelectedSortOption(index);
+    }
+  };
+
+  const search = (keyword) => {
+    setSearchKeyword(keyword);
+  };
 
   return (
-    <FlatList
-      data={repositoryNodes}
-      renderItem={RepositoryItem}
-      ItemSeparatorComponent={ItemSeparator}
-    />
+    <Loader
+      loading={!repositories && loading}
+      error={repositories ? null : error}
+    >
+      <RepositoryListContainer
+        repositories={repositories}
+        sortOptions={SORT_OPTIONS}
+        selectedSortOption={selectedSortOption}
+        searchKeyword={searchKeyword}
+        onEndReached={fetchMore}
+        onSearch={search}
+        onSort={sort}
+      />
+    </Loader>
   );
 };
 

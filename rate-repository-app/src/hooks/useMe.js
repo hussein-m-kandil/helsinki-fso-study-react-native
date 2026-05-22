@@ -4,8 +4,11 @@ import { useNavigate } from 'react-router-native';
 import { ME } from '../graphql/queries';
 import useAuthStorage from './useAuthStorage';
 
-const useMe = () => {
-  const { data } = useQuery(ME);
+const useMe = ({ variables } = {}) => {
+  const { data, loading, fetchMore, ...result } = useQuery(ME, {
+    fetchPolicy: 'cache-and-network',
+    variables,
+  });
 
   const authStorage = useAuthStorage();
 
@@ -15,11 +18,26 @@ const useMe = () => {
 
   const signOut = async () => {
     await authStorage.removeAccessToken();
+    navigate('/');
     await apolloClient.resetStore();
-    navigate('');
   };
 
-  return [data?.me, signOut];
+  const handleFetchMore = () => {
+    const canFetchMore = !loading && data?.me.reviews?.pageInfo.hasNextPage;
+
+    if (!canFetchMore) {
+      return;
+    }
+
+    fetchMore({
+      variables: {
+        after: data.me.reviews.pageInfo.endCursor,
+        ...variables,
+      },
+    });
+  };
+
+  return [{ data, loading, fetchMore: handleFetchMore, ...result }, signOut];
 };
 
 export default useMe;
